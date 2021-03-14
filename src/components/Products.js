@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import formatCurrency from '../utils';
 import Fade from 'react-awesome-reveal';
 import Modal from 'react-modal';
-export default class Products extends Component {
+import { connect } from 'react-redux';
+import {fetchProducts} from "../actions/productActions"
+
+class Products extends Component {
     constructor(props){
         super(props);
         this.state = {
@@ -10,6 +13,10 @@ export default class Products extends Component {
 
         };
     }
+    componentDidMount(){
+        this.props.fetchProducts();
+    }
+
     /*
     //Warning react-modal: App element is not defined, and it is not recommended!
     componentWillMount() {
@@ -27,7 +34,9 @@ export default class Products extends Component {
         return (
             <div>
                 <Fade down cascade={true} duration={500}>
-                    <ul className="products">
+                    {
+                        !this.props.products ? (<div>Loading...</div>) :
+                        (<ul className="products">
                         {this.props.products.map(product => 
                                 <li key={product._id}>
                                     <div className="product">
@@ -48,7 +57,9 @@ export default class Products extends Component {
                                     </div>
                                 </li>
                             )}
-                    </ul>
+                    </ul>)
+                    }
+                    
                 </Fade>
                 {
                     product && (
@@ -90,3 +101,10 @@ export default class Products extends Component {
         )
     }
 }
+
+export default connect(
+    (state) => ({ 
+        products: state.products.items
+    }),{
+        fetchProducts
+    })(Products);
